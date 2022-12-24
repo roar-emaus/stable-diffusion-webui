@@ -187,7 +187,7 @@ def prepare_environment():
     args, _ = parser.parse_known_args(sys.argv)
 
     sys.argv, _ = extract_arg(sys.argv, '-f')
-    sys.argv, skip_torch_cuda_test = extract_arg(sys.argv, '--skip-torch-cuda-test')
+    sys.argv, skip_torch_cuda_test = extract_arg(sys.argv, '--torch-cuda-test')
     sys.argv, reinstall_xformers = extract_arg(sys.argv, '--reinstall-xformers')
     sys.argv, update_check = extract_arg(sys.argv, '--update-check')
     sys.argv, run_tests, test_dir = extract_opt(sys.argv, '--tests')
@@ -205,8 +205,8 @@ def prepare_environment():
     if not is_installed("torch") or not is_installed("torchvision"):
         run(f'"{python}" -m {torch_command}', "Installing torch and torchvision", "Couldn't install torch")
 
-    if not skip_torch_cuda_test:
-        run_python("import torch; assert torch.cuda.is_available(), 'Torch is not able to use GPU; add --skip-torch-cuda-test to COMMANDLINE_ARGS variable to disable this check'")
+    if torch_cuda_test:
+        run_python("import torch; assert torch.cuda.is_available(), 'torch.cuda.is_available() failed'")
 
     if not is_installed("gfpgan"):
         run_pip(f"install {gfpgan_package}", "gfpgan")
@@ -265,8 +265,8 @@ def tests(test_dir):
     if "--ckpt" not in sys.argv:
         sys.argv.append("--ckpt")
         sys.argv.append("./test/test_files/empty.pt")
-    if "--skip-torch-cuda-test" not in sys.argv:
-        sys.argv.append("--skip-torch-cuda-test")
+    if "--torch-cuda-test" in sys.argv:
+        sys.argv.append("--torch-cuda-test")
 
     print(f"Launching Web UI in another process for testing with arguments: {' '.join(sys.argv[1:])}")
 
