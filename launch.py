@@ -158,8 +158,8 @@ def run_extensions_installers(settings_file):
 
 
 def prepare_environment():
-    torch_command = os.environ.get('TORCH_COMMAND', "pip install torch==1.12.1+cu113 torchvision==0.13.1+cu113 --extra-index-url https://download.pytorch.org/whl/cu113")
-    requirements_file = os.environ.get('REQS_FILE', "requirements_versions.txt")
+    torch_command = os.environ.get('TORCH_COMMAND', "pip install torch torchvision")
+    requirements_file = os.environ.get('REQS_FILE', "requirements.txt")
     commandline_args = os.environ.get('COMMANDLINE_ARGS', "")
 
     gfpgan_package = os.environ.get('GFPGAN_PACKAGE', "git+https://github.com/TencentARC/GFPGAN.git@8d2447a2d918f8eba5a4a01463fd48e45126a379")

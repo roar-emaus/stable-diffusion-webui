@@ -23,7 +23,7 @@ fi
 # Install directory without trailing slash
 if [[ -z "${install_dir}" ]]
 then
-    install_dir="/home/$(whoami)"
+    install_dir="/root"
 fi
 
 # Name of the subdirectory (defaults to stable-diffusion-webui)
@@ -35,7 +35,7 @@ fi
 # python3 executable
 if [[ -z "${python_cmd}" ]]
 then
-    python_cmd="python3"
+    python_cmd="python"
 fi
 
 # git executable
@@ -44,28 +44,13 @@ then
     export GIT="git"
 fi
 
-# python3 venv without trailing slash (defaults to ${install_dir}/${clone_dir}/venv)
-if [[ -z "${venv_dir}" ]]
-then
-    venv_dir="venv"
-fi
-
 if [[ -z "${LAUNCH_SCRIPT}" ]]
 then
     LAUNCH_SCRIPT="launch.py"
 fi
 
 # this script cannot be run as root by default
-can_run_as_root=0
-
-# read any command line flags to the webui.sh script
-while getopts "f" flag > /dev/null 2>&1
-do
-    case ${flag} in
-        f) can_run_as_root=1;;
-        *) break;;
-    esac
-done
+can_run_as_root=1
 
 # Disable sentry logging
 export ERROR_REPORTING=FALSE
@@ -115,14 +100,6 @@ do
     fi
 done
 
-if ! "${python_cmd}" -c "import venv" &>/dev/null
-then
-    printf "\n%s\n" "${delimiter}"
-    printf "\e[1m\e[31mERROR: python3-venv is not installed, aborting...\e[0m"
-    printf "\n%s\n" "${delimiter}"
-    exit 1
-fi
-
 cd "${install_dir}"/ || { printf "\e[1m\e[31mERROR: Can't cd to %s/, aborting...\e[0m" "${install_dir}"; exit 1; }
 if [[ -d "${clone_dir}" ]]
 then
@@ -131,7 +108,7 @@ else
     printf "\n%s\n" "${delimiter}"
     printf "Clone stable-diffusion-webui"
     printf "\n%s\n" "${delimiter}"
-    "${GIT}" clone https://github.com/AUTOMATIC1111/stable-diffusion-webui.git "${clone_dir}"
+    "${GIT}" clone https://github.com/roar-emaus/stable-diffusion-webui.git "${clone_dir}"
     cd "${clone_dir}"/ || { printf "\e[1m\e[31mERROR: Can't cd to %s/%s/, aborting...\e[0m" "${install_dir}" "${clone_dir}"; exit 1; }
 fi
 
@@ -139,21 +116,7 @@ printf "\n%s\n" "${delimiter}"
 printf "Create and activate python venv"
 printf "\n%s\n" "${delimiter}"
 cd "${install_dir}"/"${clone_dir}"/ || { printf "\e[1m\e[31mERROR: Can't cd to %s/%s/, aborting...\e[0m" "${install_dir}" "${clone_dir}"; exit 1; }
-if [[ ! -d "${venv_dir}" ]]
-then
-    "${python_cmd}" -m venv "${venv_dir}"
-    first_launch=1
-fi
-# shellcheck source=/dev/null
-if [[ -f "${venv_dir}"/bin/activate ]]
-then
-    source "${venv_dir}"/bin/activate
-else
-    printf "\n%s\n" "${delimiter}"
-    printf "\e[1m\e[31mERROR: Cannot activate python venv, aborting...\e[0m"
-    printf "\n%s\n" "${delimiter}"
-    exit 1
-fi
+#
 
 if [[ ! -z "${ACCELERATE}" ]] && [ ${ACCELERATE}="True" ] && [ -x "$(command -v accelerate)" ]
 then
