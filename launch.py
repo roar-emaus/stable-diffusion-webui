@@ -187,7 +187,7 @@ def prepare_environment():
     args, _ = parser.parse_known_args(sys.argv)
 
     sys.argv, _ = extract_arg(sys.argv, '-f')
-    sys.argv, skip_torch_cuda_test = extract_arg(sys.argv, '--torch-cuda-test')
+    sys.argv, torch_cuda_test = extract_arg(sys.argv, '--torch-cuda-test')
     sys.argv, reinstall_xformers = extract_arg(sys.argv, '--reinstall-xformers')
     sys.argv, update_check = extract_arg(sys.argv, '--update-check')
     sys.argv, run_tests, test_dir = extract_opt(sys.argv, '--tests')
